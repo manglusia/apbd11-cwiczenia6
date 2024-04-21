@@ -32,13 +32,19 @@ public class AnimalsController:ControllerBase
 
         int idAnimalOrdinal = reader.GetOrdinal("IdAnimal");
         int nameAnimalOrdinal = reader.GetOrdinal("Name");
+        int descriptionAnimalOrdinal = reader.GetOrdinal("Description");
+        int categoryAnimalOrdinal = reader.GetOrdinal("Category");
+        int areaAnimalOrdinal = reader.GetOrdinal("Area");
         
         while (reader.Read())
         {
             animals.Add(new Animal()
             {
                 IdAnimal = reader.GetInt32(idAnimalOrdinal),
-                Name = reader.GetString(nameAnimalOrdinal)
+                Name = reader.GetString(nameAnimalOrdinal),
+                Description = reader.GetString(descriptionAnimalOrdinal),
+                Category = reader.GetString(categoryAnimalOrdinal),
+                Area = reader.GetString(areaAnimalOrdinal)
             });
         }
 
@@ -53,8 +59,11 @@ public class AnimalsController:ControllerBase
 
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
-        command.CommandText = "INSERT INTO Animal VALUES (@animalName,'','','')";
+        command.CommandText = "INSERT INTO Animal VALUES (@animalName,@animalDescription,@animalCategory,@animalArea)";
         command.Parameters.AddWithValue("@animalName", addAnimal.Name);
+        command.Parameters.AddWithValue("@animalDescription", addAnimal.Description);
+        command.Parameters.AddWithValue("@animalCategory", addAnimal.Category);
+        command.Parameters.AddWithValue("@animalArea", addAnimal.Area);
 
         
         command.ExecuteNonQuery();
