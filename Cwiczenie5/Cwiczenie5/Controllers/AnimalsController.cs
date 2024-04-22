@@ -16,15 +16,21 @@ public class AnimalsController:ControllerBase
         _configuration = configuration;
     }
     [HttpGet]
-    public IActionResult GetAnimals()
+    public IActionResult GetAnimals([FromQuery] string orderBy = "name")
     {
+        if (!string.IsNullOrEmpty(orderBy)&&!validOrderBY(orderBy))
+        {
+            return BadRequest();
+        }
+
+        string zapytanie = $"SELECT * FROM Animal ORDER BY {orderBy}";
         
         using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
         connection.Open();
 
         SqlCommand command = new SqlCommand();
         command.Connection = connection;
-        command.CommandText = "SELECT * FROM Animal";
+        command.CommandText = zapytanie;
 
         var reader = command.ExecuteReader();
 
@@ -51,6 +57,12 @@ public class AnimalsController:ControllerBase
         return Ok(animals);
     }
 
+    private bool validOrderBY(string orderBy)
+    {
+        var valid = new List<String> {"name", "description", "category","area" };
+        return valid.Contains(orderBy.ToLower());
+    }
+
     [HttpPost]
     public IActionResult AddAnimal(AddAnimal addAnimal)
     {
@@ -71,6 +83,14 @@ public class AnimalsController:ControllerBase
         //_repository.AddAnimal(addAnimal)
         
         return Created("", null);
+    }
+
+    [HttpPut("{idAnimal}")]
+    public IActionResult EditAnimal(int idAnimal)
+    {
+        
+        
+        return NoContent();
     }
 
 }
